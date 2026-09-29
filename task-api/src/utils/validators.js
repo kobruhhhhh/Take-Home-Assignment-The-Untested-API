@@ -33,4 +33,18 @@ const validateUpdateTask = (body) => {
   return null;
 };
 
-module.exports = { validateCreateTask, validateUpdateTask };
+// NEW: Validation for PATCH /tasks/:id/assign - assignee required, non-empty string
+const validateAssignTask = (body) => {
+  if (body.assignee === undefined) {
+    return 'assignee is required';
+  }
+  if (typeof body.assignee !== 'string') {
+    return 'assignee must be a string';
+  }
+  if (body.assignee.trim() === '') {
+    return 'assignee must be a non-empty string';
+  }
+  return null;
+};
+
+module.exports = { validateCreateTask, validateUpdateTask, validateAssignTask };

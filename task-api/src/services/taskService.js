@@ -8,8 +8,9 @@ const findById = (id) => tasks.find((t) => t.id === id);
 
 const getByStatus = (status) => tasks.filter((t) => t.status.includes(status));
 
+// FIXED: Bug 1 - pagination offset calculation (was: page * limit, now: (page - 1) * limit)
 const getPaginated = (page, limit) => {
-  const offset = page * limit;
+  const offset = (page - 1) * limit; // FIX: 1-indexed pagination, page 1 starts at offset 0
   return tasks.slice(offset, offset + limit);
 };
 
@@ -76,6 +77,22 @@ const completeTask = (id) => {
   return updated;
 };
 
+const assignTask = (id, assignee) => {
+  const task = findById(id);
+  if (!task) return null;
+
+  const updated = {
+    ...task,
+    assignee,
+  };
+
+  const index = tasks.findIndex((t) => t.id === id);
+  tasks[index] = updated;
+  return updated;
+};
+
+// NEW: assignTask for PATCH /tasks/:id/assign - stores assignee, allows re-assignment
+
 const _reset = () => {
   tasks = [];
 };
@@ -90,5 +107,6 @@ module.exports = {
   update,
   remove,
   completeTask,
+  assignTask,
   _reset,
 };
